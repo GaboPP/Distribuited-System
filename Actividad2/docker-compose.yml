@@ -1,0 +1,25 @@
+version: '3.4'
+
+services:
+  datanode:
+    server:
+      build:
+        context: .
+        dockerfile: datanode/Dockerfile
+      image: ubuntu
+      container_name: datanode
+      ports:
+        - "4001:80"
+      depends_on:
+      - headnode
+  headnode:
+    server:
+      build:
+        context: .
+        dockerfile: headnode/Dockerfile
+      image: ubuntu
+      container_name: headnode
+      ports:
+        - "4000:80"
+      # volumes:
+      #   - .:/.
