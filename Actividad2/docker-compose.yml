@@ -23,3 +23,14 @@ services:
         - "4000:80"
       # volumes:
       #   - .:/.
+  headnode:
+    server:
+      build:
+        context: .
+        dockerfile: client/Dockerfile
+      image: ubuntu
+      container_name: client
+      ports:
+        - "4000:80"
+      # volumes:
+      #   - .:/.
