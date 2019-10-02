@@ -1,7 +1,10 @@
 import socket, time, threading, random
 
 class headnode:
-    def __init__(self, ip = 'localhost',puerto_server = 4000, puerto_datanode = 4002, ip_multicast = "224.1.1.1", puerto_multicast = 4001, MULTICAST_TTL = 1):
+    def __init__(self, ip = '172.16.238.2',puerto_server = 4000, puerto_datanode = 4002, 
+                ip_multicast = "224.1.1.1", puerto_multicast = 4001, MULTICAST_TTL = 1):
+        self.ip_headnode_list = ['172.16.238.3','172.16.238.4','172.16.238.5']
+        # self.ip_headnode_list = ['localhost','localhost','localhost']
         self.ip = ip
         self.puerto_multicast = puerto_multicast
         self.puerto_server = puerto_server
@@ -23,9 +26,10 @@ class headnode:
         self.server_socket.bind((ip, puerto_server))
         self.server_socket.listen(5)
         
-        #socket server datanode:
-        self.socket_datanode = socket.socket()
-        self.socket_datanode.connect((self.ip, self.puerto_datanode))
+        #socket server datanodes:
+        self.list_sockets_datanodes = list()
+        for i in range(3):
+            self.list_sockets_datanodes.append(socket.socket().connect((self.ip_headnode_list[i], self.puerto_datanode)))
         
         #socket multicast
         self.multicast_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
@@ -92,9 +96,17 @@ class headnode:
                 output="conection established"
             else:
                 datanode_number = random.randint(1,3)
-                #self.send_message_datanode(self, client_input, socket_target_datanode)
-                #self.log_registro(addr, datanode_number)
-                output = str(datanode_number)
+                if(self.send_message_datanode(self, client_input, self.list_sockets_datanodes[datanode_number-1])):
+                    output = str(datanode_number)
+                elif(self.send_message_datanode(self, client_input, self.list_sockets_datanodes[0])):
+                    output = str(1)
+                elif(self.send_message_datanode(self, client_input, self.list_sockets_datanodes[1])):
+                    output = str(2)
+                elif(self.send_message_datanode(self, client_input, self.list_sockets_datanodes[2])):
+                    output = str(3)
+                else:
+                    output = 'error service unavailable'                    
+                self.log_registro(addr, output)
             conexion.sendall(output.encode('utf-8'))
             conexion.close()
     def shotdown(self):
