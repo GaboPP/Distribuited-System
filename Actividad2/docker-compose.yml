@@ -1,0 +1,90 @@
+version: '3'
+
+services:
+  datanode1:
+      build:
+        context: .
+        dockerfile: datanode/Dockerfile
+        args:
+          id_datanode: 1
+      command: python3 -u datanode/datanode.py 1
+      image: ubuntu
+      container_name: datanode1
+      ports:
+        - "4008:4002" # datanode-headnode
+        - "4009:4001" # multicast
+      networks:
+        headnode_net:
+          ipv4_address: 172.16.238.3
+      # volumes:
+      #   - .:/app/datanode
+  datanode2:
+      build:
+        context: .
+        dockerfile: datanode/Dockerfile
+        args:
+          id_datanode: 2
+      command: python3 -u /app/datanode/datanode.py 2
+      image: ubuntu
+      container_name: datanode2
+      ports:
+        - "4006:4002" # datanode-headnode
+        - "4007:4001" # multicast
+      # volumes:
+      #   - .:/app/datanode
+      networks:
+        headnode_net:
+          ipv4_address: 172.16.238.4
+  
+  datanode3:
+      build:
+        context: .
+        dockerfile: datanode/Dockerfile
+        args:
+          id_datanode: 3
+      command: python3 -u /app/datanode/datanode.py 3
+      image: ubuntu
+      container_name: datanode3
+      ports:
+        - "4004:4002" # datanode-headnode
+        - "4005:4001" # multicast
+      # volumes:
+      #   - .:/app
+      networks:
+        headnode_net:
+          ipv4_address: 172.16.238.5  
+  headnode:
+      build:
+        context: ./headnode
+        dockerfile: Dockerfile
+      command: python3 headnode/headnode.py
+      image: ubuntu
+      container_name: headnode
+      ports:
+        - "4000:4000" # server headnode
+        - "4001:4002" # datanode-headnode
+        - "4002:4001" # multicast
+      # volumes:
+      #   - .:/app
+      networks:
+        headnode_net:
+          ipv4_address: 172.16.238.2
+  clientnode:
+      build:
+        context: .
+        dockerfile: client/Dockerfile
+      command: python3 -u /app/client/client.py
+      image: ubuntu
+      container_name: client
+      ports:
+        - "4003:4000"
+      # volumes:
+      #   - .:/app/client
+
+networks:
+    headnode_net:
+      driver: bridge
+      ipam:
+        driver: default
+        config:
+          - subnet: 172.16.238.0/24

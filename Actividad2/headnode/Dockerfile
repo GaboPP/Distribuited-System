@@ -12,10 +12,14 @@ LABEL Gabriel Astorga “gabriel.astorga@sansano.usm.cl”
 #     &&  apt-get -y install python3-pip \
 #     &&  apt-get -y install vim
 # Set the working directory to /app
+# RUN mkdir /app
+
+ADD . /app
 WORKDIR /app
 
-# Copy the current directory contents into the container at /app
-COPY . /app
+# # Copy the current directory contents into the container at /app
+# COPY ./headnode headnode.py ./
+# COPY . /app
 
 # Install any needed packages specified in requirements.txt
 # RUN pip install --trusted-host pypi.python.org -r requirements.txt
@@ -24,10 +28,8 @@ EXPOSE 4000
 EXPOSE 4001
 EXPOSE 4002
 
-# Define environment variable
-ENV NAME headnode
 
 # Run headnoder.py when the container launches
-# RUN echo $PWD
+
 # CMD ["python3", "-u", "/app/headnode/headnode.py"]
 # RUN "python3 -u /app/headnode/headnode.py"

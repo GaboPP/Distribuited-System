@@ -1,4 +1,4 @@
-import socket, struct, sys, os
+import socket, struct, sys, os, threading
 class datanode:
     def __init__(self, id, ip = '',puerto_server = 4002, puerto = 4001):
         self.ip = socket.gethostbyname(socket.gethostname())
@@ -24,14 +24,14 @@ class datanode:
         self.multicast_socket.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
 
     def save_message(self, message):
-        print(message)
-        file = open("datanode"+ str(self.id) + "/" +"data.txt", "a")
+        # print(message)
+        file = open("./datanode/"+"datanode"+ str(self.id) + "/" +"data.txt", "a")
         file.write(message + "\n")
         file.close()
     def listen_headnode(self):
         while True:
             conexion, addr= self.server_socket.accept()
-            print (addr)
+            # print (addr)
             headnode_input=conexion.recv(1024).decode('utf-8')
             print (headnode_input)
             if headnode_input == "hi!":
@@ -51,4 +51,8 @@ class datanode:
 if __name__ == "__main__":
     id_datanode = sys.argv[1]
     DN = datanode(id_datanode)
-    DN.listen()
+    
+    thread_server = threading.Thread(target=DN.listen_headnode)
+    thread_heartbeat = threading.Thread(target=DN.listen)
+    thread_server.start()
+    thread_heartbeat.start()
