@@ -1,7 +1,7 @@
 Sebastian Jara 201573523-9
-Gabriel Astorga 2015735??-?
+Gabriel Astorga 201573591-3
 
-Actividad 1:
+# Actividad 1:
 
 -Se levanta el servidor con los comandos:
   docker-compose build
@@ -13,7 +13,7 @@ Actividad 1:
 -Se manda un mensaje
 
 
-Actividad 2
+# Actividad 2
 
 -Para cada container correspondiente, en la base de ellos ver los logs en los txt 
 con este comando:
